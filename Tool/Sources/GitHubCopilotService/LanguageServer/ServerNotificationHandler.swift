@@ -16,6 +16,7 @@ class ServerNotificationHandlerImpl: ServerNotificationHandler {
     var copilotPolicyNotifier: CopilotPolicyNotifier = CopilotPolicyNotifierImpl.shared
     var compressionHandler: CompressionHandler = CompressionHandlerImpl.shared
     var rateLimitNotifier: RateLimitNotifier = RateLimitNotifierImpl.shared
+    var quotaNotifier: QuotaNotifier = QuotaNotifierImpl.shared
 
     init() {
         self.protocolProgressSubject = PassthroughSubject<ProgressParams, Never>()
@@ -75,6 +76,24 @@ class ServerNotificationHandlerImpl: ServerNotificationHandler {
                     from: data
                    ) {
                     rateLimitNotifier.handleRateLimitWarning(params)
+                }
+                break
+            case "copilot/quotaChange":
+                if let data = try? JSONEncoder().encode(notification.params),
+                   let params = try? JSONDecoder().decode(
+                    QuotaChangeParams.self,
+                    from: data
+                   ) {
+                    quotaNotifier.handleQuotaChange(params)
+                }
+                break
+            case "copilot/quotaWarning":
+                if let data = try? JSONEncoder().encode(notification.params),
+                   let params = try? JSONDecoder().decode(
+                    QuotaWarningParams.self,
+                    from: data
+                   ) {
+                    quotaNotifier.handleQuotaWarning(params)
                 }
                 break
             default:

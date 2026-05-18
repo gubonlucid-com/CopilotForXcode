@@ -40,6 +40,7 @@ public struct CopilotModel: Codable, Equatable {
     public let modelFamily: String
     public let modelName: String
     public let id: String
+    public let vendor: String?
     public let modelPolicy: CopilotModelPolicy?
     public let scopes: [PromptTemplateScope]
     public let preview: Bool
@@ -48,6 +49,8 @@ public struct CopilotModel: Codable, Equatable {
     public let capabilities: CopilotModelCapabilities
     public let billing: CopilotModelBilling?
     public let degradationReason: String?
+    public let modelPickerCategory: String?
+    public let modelPickerPriceCategory: String?
 }
 
 public struct CopilotModelPolicy: Codable, Equatable {
@@ -57,20 +60,41 @@ public struct CopilotModelPolicy: Codable, Equatable {
 
 public struct CopilotModelCapabilities: Codable, Equatable {
     public let supports: CopilotModelCapabilitiesSupports
+    public let limits: CopilotModelCapabilitiesLimits?
+}
+
+public struct CopilotModelCapabilitiesLimits: Codable, Equatable {
+    public let maxContextWindowTokens: Int?
+    public let maxOutputTokens: Int?
+    public let maxInputTokens: Int?
+    public let maxNonStreamingOutputTokens: Int?
 }
 
 public struct CopilotModelCapabilitiesSupports: Codable, Equatable {
     public let vision: Bool
+    public let reasoningEfforts: [String]?
+    public let supportsReasoningEffortLevel: Bool?
 }
 
 public struct CopilotModelBilling: Codable, Equatable, Hashable {
     public let isPremium: Bool
     public let multiplier: Float
-    
-    public init(isPremium: Bool, multiplier: Float) {
+    public let tokenBasedBillingEnabled: Bool?
+    public let tokenPrices: CopilotModelBillingTokenPrices?
+
+    public init(isPremium: Bool, multiplier: Float, tokenBasedBillingEnabled: Bool? = nil, tokenPrices: CopilotModelBillingTokenPrices? = nil) {
         self.isPremium = isPremium
         self.multiplier = multiplier
+        self.tokenBasedBillingEnabled = tokenBasedBillingEnabled
+        self.tokenPrices = tokenPrices
     }
+}
+
+public struct CopilotModelBillingTokenPrices: Codable, Equatable, Hashable {
+    public let cachePrice: Float?
+    public let inputPrice: Float?
+    public let outputPrice: Float?
+    public let tokenUnit: Int?
 }
 
 // MARK: ChatModes
@@ -687,6 +711,18 @@ public enum Reference: Codable, Equatable, Hashable {
     }
 }
 
+public struct ConversationModelInfo: Codable {
+    public let id: String?
+    public let providerName: String?
+    public let reasoningEffort: String?
+
+    public init(id: String?, providerName: String?, reasoningEffort: String?) {
+        self.id = id
+        self.providerName = providerName
+        self.reasoningEffort = reasoningEffort
+    }
+}
+
 public struct ConversationCreateResponse: Codable {
     public let conversationId: String
     public let turnId: String
@@ -694,6 +730,7 @@ public struct ConversationCreateResponse: Codable {
     public let modelName: String?
     public let modelProviderName: String?
     public let billingMultiplier: Float?
+    public let modelInfo: ConversationModelInfo?
 }
 
 public struct ConversationCreateParams: Codable {
@@ -709,11 +746,12 @@ public struct ConversationCreateParams: Codable {
     public var ignoredSkills: [String]?
     public var model: String?
     public var modelProviderName: String?
+    public var modelInfo: ConversationModelInfo?
     public var chatMode: String?
     public var customChatModeId: String?
     public var needToolCallConfirmation: Bool?
     public var userLanguage: String?
-    
+
     public struct Capabilities: Codable {
         public var skills: [String]
         public var allSkills: Bool?
@@ -737,6 +775,7 @@ public struct ConversationCreateParams: Codable {
         ignoredSkills: [String]? = nil,
         model: String? = nil,
         modelProviderName: String? = nil,
+        modelInfo: ConversationModelInfo? = nil,
         chatMode: String? = nil,
         customChatModeId: String? = nil,
         needToolCallConfirmation: Bool? = nil,
@@ -754,6 +793,7 @@ public struct ConversationCreateParams: Codable {
         self.ignoredSkills = ignoredSkills
         self.model = model
         self.modelProviderName = modelProviderName
+        self.modelInfo = modelInfo
         self.chatMode = chatMode
         self.customChatModeId = customChatModeId
         self.needToolCallConfirmation = needToolCallConfirmation

@@ -346,6 +346,7 @@ public struct ConversationRequest {
     public var references: [ConversationAttachedReference]?
     public var model: String?
     public var modelProviderName: String?
+    public var reasoningEffort: String?
     public var turns: [TurnSchema]
     public var agentMode: Bool = false
     public var customChatModeId: String? = nil
@@ -363,6 +364,7 @@ public struct ConversationRequest {
         references: [ConversationAttachedReference]? = nil,
         model: String? = nil,
         modelProviderName: String? = nil,
+        reasoningEffort: String? = nil,
         turns: [TurnSchema] = [],
         agentMode: Bool = false,
         customChatModeId: String? = nil,
@@ -379,6 +381,7 @@ public struct ConversationRequest {
         self.references = references
         self.model = model
         self.modelProviderName = modelProviderName
+        self.reasoningEffort = reasoningEffort
         self.turns = turns
         self.agentMode = agentMode
         self.customChatModeId = customChatModeId

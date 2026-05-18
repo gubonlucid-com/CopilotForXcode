@@ -23,7 +23,7 @@ private let r: Double = 4
 public struct ChatPanel: View {
     @Perception.Bindable var chat: StoreOf<Chat>
     @Namespace var inputAreaNamespace
-    @ObservedObject private var rateLimitNotifier = RateLimitNotifierImpl.shared
+    @ObservedObject private var warningManager = WarningStateManager.shared
 
     public var body: some View {
         WithPerceptionTracking {
@@ -56,9 +56,13 @@ public struct ChatPanel: View {
                     }
                 }
                 
-                if let warning = rateLimitNotifier.currentWarning {
-                    RateLimitWarningBanner(message: warning.message) {
-                        rateLimitNotifier.dismissWarning()
+                if let warning = warningManager.currentWarning {
+                    WarningBanner(
+                        message: warning.message,
+                        severity: warning.severity,
+                        actions: warning.actions
+                    ) {
+                        warningManager.dismissWarning()
                     }
                     .scaledPadding(.horizontal, 24)
                     .scaledPadding(.vertical, 8)

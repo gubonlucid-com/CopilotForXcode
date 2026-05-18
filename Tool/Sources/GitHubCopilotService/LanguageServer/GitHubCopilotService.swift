@@ -75,6 +75,7 @@ public protocol GitHubCopilotConversationServiceType {
                             references: [ConversationAttachedReference],
                             model: String?,
                             modelProviderName: String?,
+                            reasoningEffort: String?,
                             turns: [TurnSchema],
                             agentMode: Bool,
                             customChatModeId: String?,
@@ -88,6 +89,7 @@ public protocol GitHubCopilotConversationServiceType {
                     references: [ConversationAttachedReference],
                     model: String?,
                     modelProviderName: String?,
+                    reasoningEffort: String?,
                     workspaceFolder: String,
                     workspaceFolders: [WorkspaceFolder]?,
                     agentMode: Bool,
@@ -654,6 +656,7 @@ public final class GitHubCopilotService:
         references: [ConversationAttachedReference],
         model: String?,
         modelProviderName: String?,
+        reasoningEffort: String?,
         turns: [TurnSchema],
         agentMode: Bool,
         customChatModeId: String?,
@@ -687,6 +690,13 @@ public final class GitHubCopilotService:
                                               ignoredSkills: ignoredSkills,
                                               model: model,
                                               modelProviderName: modelProviderName,
+                                              modelInfo: (model != nil || reasoningEffort != nil)
+                                                  ? ConversationModelInfo(
+                                                      id: model,
+                                                      providerName: modelProviderName,
+                                                      reasoningEffort: reasoningEffort
+                                                  )
+                                                  : nil,
                                               chatMode: agentMode ? "Agent" : nil,
                                               customChatModeId: customChatModeId,
                                               needToolCallConfirmation: true,
@@ -711,13 +721,14 @@ public final class GitHubCopilotService:
        references: [ConversationAttachedReference],
        model: String?,
        modelProviderName: String?,
+       reasoningEffort: String?,
        workspaceFolder: String,
        workspaceFolders: [WorkspaceFolder]? = nil,
        agentMode: Bool,
        customChatModeId: String?
     ) async throws -> ConversationCreateResponse {
         do {
-            let params = TurnCreateParams(workDoneToken: workDoneToken,
+            var params = TurnCreateParams(workDoneToken: workDoneToken,
                                           conversationId: conversationId,
                                           turnId: turnId,
                                           message: message,
@@ -731,6 +742,9 @@ public final class GitHubCopilotService:
                                           chatMode: agentMode ? "Agent" : nil,
                                           customChatModeId: customChatModeId,
                                           needToolCallConfirmation: true)
+            if model != nil || reasoningEffort != nil {
+                params.modelInfo = ConversationModelInfo(id: model, providerName: modelProviderName, reasoningEffort: reasoningEffort)
+            }
             return try await sendRequest(
                 GitHubCopilotRequest.CreateTurn(params: params))
         } catch {

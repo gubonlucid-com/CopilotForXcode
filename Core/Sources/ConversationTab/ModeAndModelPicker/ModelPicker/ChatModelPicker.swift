@@ -1,3 +1,4 @@
+import Persist
 import SharedUIComponents
 import SwiftUI
 
@@ -9,6 +10,7 @@ struct ChatModelPicker: View {
     let currentCache: ScopeCache
 
     @StateObject private var fontScaleManager = FontScaleManager.shared
+    @State private var currentEffort: String?
 
     private var fontScale: Double {
         fontScaleManager.currentScale
@@ -21,8 +23,38 @@ struct ChatModelPicker: View {
             byokModels: byokModels,
             isBYOKFFEnabled: isBYOKFFEnabled,
             currentCache: currentCache,
-            fontScale: fontScale
+            fontScale: fontScale,
+            currentEffort: currentEffort
         )
         .fixedSize(horizontal: false, vertical: true)
+        .onAppear {
+            currentEffort = computeEffort(for: selectedModel)
+        }
+        .onChange(of: selectedModel) { model in
+            currentEffort = computeEffort(for: model)
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .gitHubCopilotModelsDidChange
+            )
+        ) { _ in
+            currentEffort = computeEffort(for: selectedModel)
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .gitHubCopilotSelectedReasoningEffortDidChange
+            )
+        ) { _ in
+            currentEffort = computeEffort(for: selectedModel)
+        }
+    }
+
+    private func computeEffort(for model: LLMModel?) -> String? {
+        guard let model,
+              model.supportsReasoningEffortLevel,
+              !model.isAutoModel else { return nil }
+        let effort = AppState.shared.effectiveReasoningEffort(for: model)
+        guard let e = effort, e.lowercased() != "none" else { return nil }
+        return e
     }
 }

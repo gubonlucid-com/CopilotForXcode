@@ -23,7 +23,9 @@ extension ChatMessage {
         var turnStatus: ChatMessage.TurnStatus?
         let requestType: RequestType
         var modelName: String?
+        var modelProviderName: String?
         var billingMultiplier: Float?
+        var reasoningEffort: String?
 
         // Custom decoder to provide default value for steps
         init(from decoder: Decoder) throws {
@@ -51,7 +53,9 @@ extension ChatMessage {
             turnStatus = try container.decodeIfPresent(ChatMessage.TurnStatus.self, forKey: .turnStatus)
             requestType = try container.decodeIfPresent(RequestType.self, forKey: .requestType) ?? .conversation
             modelName = try container.decodeIfPresent(String.self, forKey: .modelName)
+            modelProviderName = try container.decodeIfPresent(String.self, forKey: .modelProviderName)
             billingMultiplier = try container.decodeIfPresent(Float.self, forKey: .billingMultiplier)
+            reasoningEffort = try container.decodeIfPresent(String.self, forKey: .reasoningEffort)
         }
 
         // Default memberwise init for encoding
@@ -72,7 +76,9 @@ extension ChatMessage {
             turnStatus: ChatMessage.TurnStatus? = nil,
             requestType: RequestType = .conversation,
             modelName: String? = nil,
-            billingMultiplier: Float? = nil
+            modelProviderName: String? = nil,
+            billingMultiplier: Float? = nil,
+            reasoningEffort: String? = nil
         ) {
             self.content = content
             self.contentImageReferences = contentImageReferences ?? []
@@ -90,7 +96,9 @@ extension ChatMessage {
             self.turnStatus = turnStatus
             self.requestType = requestType
             self.modelName = modelName
+            self.modelProviderName = modelProviderName
             self.billingMultiplier = billingMultiplier
+            self.reasoningEffort = reasoningEffort
         }
     }
     
@@ -112,7 +120,9 @@ extension ChatMessage {
             turnStatus: self.turnStatus,
             requestType: self.requestType,
             modelName: self.modelName,
-            billingMultiplier: self.billingMultiplier
+            modelProviderName: self.modelProviderName,
+            billingMultiplier: self.billingMultiplier,
+            reasoningEffort: self.reasoningEffort
         )
         
         // TODO: handle exception
@@ -152,7 +162,9 @@ extension ChatMessage {
                     turnStatus: turnItemData.turnStatus,
                     requestType: turnItemData.requestType,
                     modelName: turnItemData.modelName,
+                    modelProviderName: turnItemData.modelProviderName,
                     billingMultiplier: turnItemData.billingMultiplier,
+                    reasoningEffort: turnItemData.reasoningEffort,
                     createdAt: turnItem.createdAt,
                     updatedAt: turnItem.updatedAt
                 )

@@ -1,4 +1,5 @@
 import AppKit
+import Persist
 import SwiftUI
 
 // MARK: - Model Picker Button (NSViewRepresentable)
@@ -10,6 +11,7 @@ struct ModelPickerButton: NSViewRepresentable {
     let isBYOKFFEnabled: Bool
     let currentCache: ScopeCache
     let fontScale: Double
+    let currentEffort: String?
 
     func makeNSView(context: Context) -> NSView {
         let container = ModelPickerContainerView(fontScale: fontScale)
@@ -104,10 +106,21 @@ struct ModelPickerButton: NSViewRepresentable {
               let chevronView = context.coordinator.chevronView
         else { return }
 
-        let label = selectedModelLabel
-        titleLabel.stringValue = label
-        titleLabel.font = NSFont.systemFont(ofSize: 13 * fontScale)
-        titleLabel.textColor = .labelColor
+        let font = NSFont.systemFont(ofSize: 13 * fontScale)
+        let baseName = modelDisplayName
+        let effort = currentEffort
+
+        let attrStr = NSMutableAttributedString(
+            string: baseName,
+            attributes: [.font: font, .foregroundColor: NSColor.labelColor]
+        )
+        if let effort {
+            attrStr.append(NSAttributedString(
+                string: " · \(effort.capitalized)",
+                attributes: [.font: font, .foregroundColor: NSColor.secondaryLabelColor]
+            ))
+        }
+        titleLabel.attributedStringValue = attrStr
 
         let chevronConfig = NSImage.SymbolConfiguration(
             pointSize: 8 * fontScale, weight: .semibold
@@ -129,12 +142,13 @@ struct ModelPickerButton: NSViewRepresentable {
         // Hover background
         let isHovered = context.coordinator.isHovered
         button.layer?.backgroundColor = isHovered
-            ? NSColor.gray.withAlphaComponent(0.1).cgColor
+            ? NSColor.gray.withAlphaComponent(0.15).cgColor
             : NSColor.clear.cgColor
         button.layer?.cornerRadius = 5 * fontScale
         button.layer?.cornerCurve = .continuous
 
         // Ideal width based on text (allows shrinking when parent is tight)
+        let label = selectedModelLabel
         let textWidth = labelWidth(label: label)
         context.coordinator.widthConstraint?.constant = textWidth
         if context.coordinator.widthConstraint == nil {
@@ -163,12 +177,17 @@ struct ModelPickerButton: NSViewRepresentable {
         )
     }
 
-    private var selectedModelLabel: String {
+    private var modelDisplayName: String {
         let name = selectedModel?.displayName ?? selectedModel?.modelName ?? ""
-        if selectedModel?.degradationReason != nil {
-            return "\u{26A0} \(name)"
-        }
+        if selectedModel?.degradationReason != nil { return "\u{26A0} \(name)" }
         return name
+    }
+
+    private var selectedModelLabel: String {
+        if let effort = currentEffort {
+            return "\(modelDisplayName) · \(effort.capitalized)"
+        }
+        return modelDisplayName
     }
 
     private func labelWidth(label: String) -> CGFloat {
@@ -229,7 +248,7 @@ struct ModelPickerButton: NSViewRepresentable {
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.15
                 button?.animator().layer?.backgroundColor = NSColor.gray
-                    .withAlphaComponent(0.1).cgColor
+                    .withAlphaComponent(0.15).cgColor
             }
             NSCursor.pointingHand.push()
         }

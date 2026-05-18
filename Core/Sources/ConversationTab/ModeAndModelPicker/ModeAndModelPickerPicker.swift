@@ -135,6 +135,11 @@ struct ModeAndModelPicker: View {
                 selectedModel = nil
             }
         } else {
+            if let fresh = freshModel, let current = currentModel,
+               fresh.supportsReasoningEffortLevel != current.supportsReasoningEffortLevel
+                   || fresh.reasoningEfforts != current.reasoningEfforts {
+                AppState.shared.setSelectedModel(fresh)
+            }
             selectedModel = freshModel ?? defaultModel
         }
     }

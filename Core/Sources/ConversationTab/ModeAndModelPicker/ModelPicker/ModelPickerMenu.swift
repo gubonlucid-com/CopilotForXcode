@@ -348,9 +348,7 @@ struct ModelPickerMenu {
         maxWidth: CGFloat
     ) {
         let item = NSMenuItem()
-        let multiplierText = currentCache
-            .modelMultiplierCache[model.id.appending(model.providerName ?? "")]
-            ?? ModelMenuItemFormatter.getMultiplierText(for: model)
+        let multiplierText = resolvedMultiplierText(for: model)
 
         let menuItemView = ModelPickerMenuItem(
             model: model,
@@ -367,7 +365,11 @@ struct ModelPickerMenu {
                 self.detailPanel.show(
                     for: hoveredModel,
                     nearRect: itemRect,
-                    fontScale: self.fontScale
+                    fontScale: self.fontScale,
+                    onModelSelect: {
+                        AppState.shared.setSelectedModel(model)
+                        menu.cancelTracking()
+                    }
                 )
             },
             onHoverExit: {
@@ -378,6 +380,15 @@ struct ModelPickerMenu {
         menu.addItem(item)
     }
 
+    private func resolvedMultiplierText(for model: LLMModel) -> String {
+        if model.supportsReasoningEffortLevel {
+            let effort = AppState.shared.effectiveReasoningEffort(for: model)
+            return ModelMenuItemFormatter.getMultiplierText(for: model, reasoningEffort: effort)
+        }
+        return currentCache.modelMultiplierCache[model.id.appending(model.providerName ?? "")]
+            ?? ModelMenuItemFormatter.getMultiplierText(for: model)
+    }
+
     private func calculateMaxWidth(
         copilotModels: [LLMModel],
         byokModels: [LLMModel]
@@ -386,9 +397,7 @@ struct ModelPickerMenu {
         let allModels = isBYOKFFEnabled ? copilotModels + byokModels : copilotModels
 
         for model in allModels {
-            let multiplierText = currentCache
-                .modelMultiplierCache[model.id.appending(model.providerName ?? "")]
-                ?? ModelMenuItemFormatter.getMultiplierText(for: model)
+            let multiplierText = resolvedMultiplierText(for: model)
             let width = ModelPickerMenuItem.calculateItemWidth(
                 model: model,
                 multiplierText: multiplierText,

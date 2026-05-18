@@ -282,8 +282,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             let service = try await GitHubCopilotViewModel.shared.getGitHubCopilotAuthService()
             let accountStatus = try await service.checkStatus()
             if accountStatus == .ok || accountStatus == .maybeOk {
-                let quota = try await service.checkQuota()
-                Logger.service.info("User quota checked successfully: \(quota)")
+                await GitHubCopilotViewModel.shared.refreshQuotaIfNeeded()
             }
         } catch {
             Logger.service.error("Failed to read auth status: \(error)")
@@ -333,27 +332,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             self.authStatusItem.isHidden = true
         }
         
-        if let quotaInfo = status.quotaInfo, !quotaInfo.resetDate.isEmpty {
+        if let quotaInfo = status.quotaInfo {
             self.quotaItem.isHidden = false
-            self.quotaItem.view = QuotaView(
-                chat: .init(
-                    percentRemaining: quotaInfo.chat.percentRemaining,
-                    unlimited: quotaInfo.chat.unlimited,
-                    overagePermitted: quotaInfo.chat.overagePermitted
-                ),
-                completions: .init(
-                    percentRemaining: quotaInfo.completions.percentRemaining,
-                    unlimited: quotaInfo.completions.unlimited,
-                    overagePermitted: quotaInfo.completions.overagePermitted
-                ),
-                premiumInteractions: .init(
-                    percentRemaining: quotaInfo.premiumInteractions.percentRemaining,
-                    unlimited: quotaInfo.premiumInteractions.unlimited,
-                    overagePermitted: quotaInfo.premiumInteractions.overagePermitted
-                ),
-                resetDate: quotaInfo.resetDate,
-                copilotPlan: quotaInfo.copilotPlan
-            )
+            self.quotaItem.view = QuotaView(quotaInfo: quotaInfo)
         } else {
             self.quotaItem.isHidden = true
         }

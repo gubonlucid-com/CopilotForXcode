@@ -21,10 +21,8 @@ public protocol RateLimitNotifier {
     func handleRateLimitWarning(_ params: RateLimitWarningParams)
 }
 
-public class RateLimitNotifierImpl: NSObject, RateLimitNotifier, ObservableObject {
+public class RateLimitNotifierImpl: NSObject, RateLimitNotifier {
     public static let shared = RateLimitNotifierImpl()
-
-    @Published public var currentWarning: RateLimitWarningParams?
 
     private static let categoryIdentifier = "rateLimitWarningCategory"
     private static let learnMoreActionIdentifier = "rateLimitLearnMoreAction"
@@ -66,20 +64,16 @@ public class RateLimitNotifierImpl: NSObject, RateLimitNotifier, ObservableObjec
     }
 
     public func handleRateLimitWarning(_ params: RateLimitWarningParams) {
-        DispatchQueue.main.async { [weak self] in
-            self?.currentWarning = params
-        }
+        WarningStateManager.shared.setWarning(WarningContent(
+            message: params.message,
+            severity: "warning",
+            actions: [WarningAction(title: "Learn more", url: Self.learnMoreURL)]
+        ))
 
         Task { @MainActor in
             await NotificationCenterCoordinator.shared.setupIfNeeded()
             self.registerCategoryIfNeeded()
             await sendAppleNotification(params)
-        }
-    }
-
-    public func dismissWarning() {
-        DispatchQueue.main.async { [weak self] in
-            self?.currentWarning = nil
         }
     }
 
@@ -92,7 +86,7 @@ public class RateLimitNotifierImpl: NSObject, RateLimitNotifier, ObservableObjec
         content.categoryIdentifier = Self.categoryIdentifier
 
         let request = UNNotificationRequest(
-            identifier: "rateLimitWarning-\(UUID().uuidString)",
+            identifier: "rateLimitWarning",
             content: content,
             trigger: nil
         )

@@ -269,6 +269,7 @@ let package = Package(
                 .product(name: "GitHubCopilotService", package: "Tool"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Status", package: "Tool"),
+                .product(name: "Logger", package: "Tool"),
             ]
         ),
 

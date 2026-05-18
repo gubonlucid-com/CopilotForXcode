@@ -174,22 +174,36 @@ class ModelPickerMenuItem: NSView {
 
         let textLeading = checkmarkImageView.trailingAnchor
 
-        NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(
-                equalTo: textLeading, constant: constants.checkmarkToText
-            ),
-            nameLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+        if multiplierText.isEmpty {
+            // No multiplier — name label extends to the trailing edge
+            NSLayoutConstraint.activate([
+                nameLabel.leadingAnchor.constraint(
+                    equalTo: textLeading, constant: constants.checkmarkToText
+                ),
+                nameLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+                nameLabel.trailingAnchor.constraint(
+                    lessThanOrEqualTo: trailingAnchor,
+                    constant: -constants.trailingPadding
+                ),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                nameLabel.leadingAnchor.constraint(
+                    equalTo: textLeading, constant: constants.checkmarkToText
+                ),
+                nameLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
 
-            multiplierLabel.trailingAnchor.constraint(
-                equalTo: trailingAnchor, constant: -constants.trailingPadding
-            ),
-            multiplierLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+                multiplierLabel.trailingAnchor.constraint(
+                    equalTo: trailingAnchor, constant: -constants.trailingPadding
+                ),
+                multiplierLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
 
-            nameLabel.trailingAnchor.constraint(
-                lessThanOrEqualTo: multiplierLabel.leadingAnchor,
-                constant: -constants.nameToMultiplier
-            ),
-        ])
+                nameLabel.trailingAnchor.constraint(
+                    lessThanOrEqualTo: multiplierLabel.leadingAnchor,
+                    constant: -constants.nameToMultiplier
+                ),
+            ])
+        }
     }
 
     // MARK: - Mouse handling

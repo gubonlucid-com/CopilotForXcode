@@ -30,6 +30,7 @@ public protocol ChatServiceType {
         references: [ConversationAttachedReference],
         model: String?,
         modelProviderName: String?,
+        reasoningEffort: String?,
         agentMode: Bool,
         customChatModeId: String?,
         userLanguage: String?,
@@ -363,6 +364,7 @@ public final class ChatService: ChatServiceType, ObservableObject {
         references: [ConversationAttachedReference],
         model: String? = nil,
         modelProviderName: String? = nil,
+        reasoningEffort: String? = nil,
         agentMode: Bool = false,
         customChatModeId: String? = nil,
         userLanguage: String? = nil,
@@ -469,6 +471,7 @@ public final class ChatService: ChatServiceType, ObservableObject {
             references: references,
             model: model,
             modelProviderName: modelProviderName,
+            reasoningEffort: reasoningEffort,
             agentMode: agentMode,
             customChatModeId: customChatModeId,
             userLanguage: userLanguage,
@@ -500,6 +503,7 @@ public final class ChatService: ChatServiceType, ObservableObject {
         references: [ConversationAttachedReference],
         model: String? = nil,
         modelProviderName: String? = nil,
+        reasoningEffort: String? = nil,
         agentMode: Bool = false,
         customChatModeId: String? = nil,
         userLanguage: String? = nil,
@@ -526,6 +530,7 @@ public final class ChatService: ChatServiceType, ObservableObject {
             references: references,
             model: model,
             modelProviderName: modelProviderName,
+            reasoningEffort: reasoningEffort,
             agentMode: agentMode,
             customChatModeId: customChatModeId,
             userLanguage: userLanguage,
@@ -537,7 +542,10 @@ public final class ChatService: ChatServiceType, ObservableObject {
         await memory.mutateHistory { history in
             if let index = history.firstIndex(where: { $0.id == response.turnId && $0.role.isAssistant }) {
                 history[index].modelName = response.modelName
+                let modelProviderName = response.modelInfo?.providerName ?? response.modelProviderName
+                history[index].modelProviderName = modelProviderName
                 history[index].billingMultiplier = response.billingMultiplier
+                history[index].reasoningEffort = response.modelInfo?.reasoningEffort
                 
                 self.saveChatMessageToStorage(history[index])
             }
@@ -998,6 +1006,16 @@ public final class ChatService: ChatServiceType, ObservableObject {
         }
     }
 
+    private func strippingRequestIDs(from message: String) -> String {
+        // "Request ID:" always appears before "GitHub Request ID:", so cutting at the first
+        // occurrence removes both along with the preceding separator (". " or " | ")
+        guard let range = message.range(of: "Request ID:", options: .caseInsensitive) else {
+            return message
+        }
+        return String(message[..<range.lowerBound])
+            .trimmingCharacters(in: CharacterSet(charactersIn: " |\t\n\r"))
+    }
+
     private func handleProgressEnd(token: String, progress: ConversationProgressEnd) {
         guard let workDoneToken = activeRequestId, workDoneToken == token else { return }
 
@@ -1011,12 +1029,13 @@ public final class ChatService: ChatServiceType, ObservableObject {
                 Task {
                     let selectedModel = lastUserRequest?.model
                     let selectedModelProviderName = lastUserRequest?.modelProviderName
-                    
+                    let isBYOK = selectedModel != nil && selectedModelProviderName != nil
+
                     var errorMessageText: String
                     if let selectedModel = selectedModel, let selectedModelProviderName = selectedModelProviderName {
                         errorMessageText = "You've reached your quota limit for your BYOK model \(selectedModel). Please check with \(selectedModelProviderName) for more information."
                     } else {
-                        errorMessageText = CLSError.message
+                        errorMessageText = strippingRequestIDs(from: CLSError.message)
                     }
 
                     await Status.shared
@@ -1026,10 +1045,12 @@ public final class ChatService: ChatServiceType, ObservableObject {
                         chatTabID: chatTabInfo.id,
                         panelMessages: [.init(type: .error, title: String(CLSError.code ?? 0), message: errorMessageText, location: .Panel)]
                     )
-                    // will persist in resetongoingRequest()
                     await memory.appendMessage(errorMessage)
-                    
-                    if let lastUserRequest,
+
+                    // TBB messages mention "AI Credits" or "additional overages" — no fallback for TBB
+                    let isTBB = !isBYOK && (CLSError.message.contains("AI Credits") || CLSError.message.contains("additional overages"))
+                    if !isTBB,
+                       let lastUserRequest,
                        let currentUserPlan = await Status.shared.currentUserPlan(),
                        currentUserPlan != "free" {
                         guard let fallbackModel = CopilotModelManager.getFallbackLLM(
@@ -1051,6 +1072,7 @@ public final class ChatService: ChatServiceType, ObservableObject {
                         }
                         return
                     }
+                    resetOngoingRequest(with: .error)
                 }
             } else if CLSError.code == 400 && CLSError.message.contains("model is not supported") {
                 Task {

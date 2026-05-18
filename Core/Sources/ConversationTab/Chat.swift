@@ -39,7 +39,9 @@ public struct DisplayedChatMessage: Equatable {
     public var turnStatus: ChatMessage.TurnStatus? = nil
     public let requestType: RequestType
     public var modelName: String? = nil
+    public var modelProviderName: String? = nil
     public var billingMultiplier: Float? = nil
+    public var reasoningEffort: String? = nil
 
     public init(
         id: String,
@@ -60,7 +62,9 @@ public struct DisplayedChatMessage: Equatable {
         turnStatus: ChatMessage.TurnStatus? = nil,
         requestType: RequestType,
         modelName: String? = nil,
-        billingMultiplier: Float? = nil
+        modelProviderName: String? = nil,
+        billingMultiplier: Float? = nil,
+        reasoningEffort: String? = nil
     ) {
         self.id = id
         self.role = role
@@ -80,7 +84,9 @@ public struct DisplayedChatMessage: Equatable {
         self.turnStatus = turnStatus
         self.requestType = requestType
         self.modelName = modelName
+        self.modelProviderName = modelProviderName
         self.billingMultiplier = billingMultiplier
+        self.reasoningEffort = reasoningEffort
     }
 }
 
@@ -739,6 +745,7 @@ struct Chat {
                 let selectedModelFamily = selectedModel?.modelFamily ?? CopilotModelManager.getDefaultChatModel(
                     scope: AppState.shared.modelScope()
                 )?.modelFamily
+                let reasoningEffort = selectedModel.flatMap { AppState.shared.effectiveReasoningEffort(for: $0) }
                 let agentMode = AppState.shared.isAgentModeEnabled()
                 let selectedAgentSubMode = AppState.shared.getSelectedAgentSubMode()
                 let shouldAttachImages = selectedModel?.supportVision ?? CopilotModelManager.getDefaultChatModel(
@@ -775,6 +782,7 @@ struct Chat {
                             references: references,
                             model: selectedModelFamily,
                             modelProviderName: selectedModel?.providerName,
+                            reasoningEffort: reasoningEffort,
                             agentMode: agentMode,
                             customChatModeId: selectedAgentSubMode,
                             userLanguage: chatResponseLocale
@@ -834,6 +842,7 @@ struct Chat {
                             references: references,
                             model: selectedModelFamily,
                             modelProviderName: selectedModel?.providerName,
+                            reasoningEffort: selectedModel.flatMap { AppState.shared.effectiveReasoningEffort(for: $0) },
                             agentMode: agentMode,
                             customChatModeId: selectedAgentSubMode,
                             userLanguage: chatResponseLocale
@@ -1079,7 +1088,9 @@ struct Chat {
                         turnStatus: message.turnStatus,
                         requestType: message.requestType,
                         modelName: message.modelName,
-                        billingMultiplier: message.billingMultiplier
+                        modelProviderName: message.modelProviderName,
+                        billingMultiplier: message.billingMultiplier,
+                        reasoningEffort: message.reasoningEffort
                     ))
 
                     return all
@@ -1328,7 +1339,7 @@ struct Chat {
                 // TODO: if we need to switch to agent mode or keep the current mode
                 let selectedAgentSubMode = AppState.shared.getSelectedAgentSubMode()
                 
-                return .run { _ in 
+                return .run { _ in
                     try await service.send(
                         UUID().uuidString,
                         content: message,
@@ -1336,6 +1347,7 @@ struct Chat {
                         references: references,
                         model: selectedModelFamily,
                         modelProviderName: selectedModel?.providerName,
+                        reasoningEffort: selectedModel.flatMap { AppState.shared.effectiveReasoningEffort(for: $0) },
                         agentMode: agentMode,
                         customChatModeId: selectedAgentSubMode,
                         userLanguage: chatResponseLocale

@@ -159,7 +159,9 @@ extension ChatMessage {
         
         // merge modelName and billingMultiplier
         self.modelName = message.modelName ?? self.modelName
+        self.modelProviderName = message.modelProviderName ?? self.modelProviderName
         self.billingMultiplier = message.billingMultiplier ?? self.billingMultiplier
+        self.reasoningEffort = message.reasoningEffort ?? self.reasoningEffort
     }
     
     private func mergeEditAgentRounds(oldRounds: [AgentRound], newRounds: [AgentRound]) -> [AgentRound] {

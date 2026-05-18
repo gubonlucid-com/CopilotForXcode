@@ -107,6 +107,7 @@ struct TurnCreateParams: Codable {
     var references: [Reference]?
     var model: String?
     var modelProviderName: String?
+    var modelInfo: ConversationModelInfo?
     var workspaceFolder: String?
     var workspaceFolders: [WorkspaceFolder]?
     var chatMode: String?

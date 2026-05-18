@@ -203,6 +203,7 @@ let package = Package(
                 "Highlightr",
                 "Preferences",
                 "SuggestionBasic",
+                "Status",
                 "DebounceFunction",
                 "ConversationServiceProvider",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
@@ -242,7 +243,7 @@ let package = Package(
             ]
         ),
         
-        .target(name: "StatusBarItemView", dependencies: ["Cache"]),
+        .target(name: "StatusBarItemView", dependencies: ["Cache", "Status"]),
       
         .target(
             name: "Cache"
