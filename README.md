@@ -162,3 +162,189 @@ Thank you to @intitni for creating the original project that this is based on.
 
 Attributions can be found under About when running the app or in
 [Credits.rtf](./Copilot%20for%20Xcode/Credits.rtf).
+
+func calculateDaysBetweenDates(
+# IDE 中GitHub Copilot 的键盘快捷方式
+
+查找在支持的 IDE 中 GitHub Copilot 的键盘快捷方式列表。
+
+<div class="ghd-tool jetbrains">
+
+使用 GitHub Copilot 时，可以在 JetBrains IDE 中使用默认键盘快捷方式获取内联建议。
+
+## macOS 键盘快捷方式
+
+| 动作 | 快捷键 |
+|:---|:---|
+|接受内联建议|
+<kbd>选项卡</kbd>|
+|忽略内联建议|
+<kbd>Esc</kbd>|
+|显示下一个内联建议|
+<kbd>Option (⌥) 或 Alt</kbd>+<kbd>]</kbd>|
+|显示上一个内联建议|
+<kbd>Option (⌥) 或 Alt</kbd>+<kbd>[</kbd>|
+|触发内联建议|
+<kbd>选项 (⌥)</kbd>+<kbd>\\</kbd>|
+|打开 GitHub Copilot（在单独的面板中查看其他建议）|
+<kbd>Option (⌥) 或 Alt</kbd>+<kbd>返回</kbd> |
+
+## Windows 键盘快捷方式
+
+| 动作 | 快捷键 |
+|:---|:---|
+|接受内联建议|
+<kbd>选项卡</kbd>|
+|忽略内联建议|
+<kbd>Esc</kbd>|
+|显示下一个内联建议|
+<kbd>Alt</kbd>+<kbd>]</kbd>|
+|显示上一个内联建议|
+<kbd>Alt</kbd>+<kbd>[</kbd>|
+|触发内联建议|
+<kbd>Alt</kbd>+<kbd>\\</kbd>|
+|打开 GitHub Copilot（在单独的面板中查看其他建议）|
+<kbd>Alt</kbd>+<kbd>进入</kbd> |
+
+## Linux 键盘快捷方式
+
+| 动作 | 快捷键 |
+|:---|:---|
+|接受内联建议|
+<kbd>选项卡</kbd>|
+|忽略内联建议|
+<kbd>Esc</kbd>|
+|显示下一个内联建议|
+<kbd>Alt</kbd>+<kbd>]</kbd>|
+|显示上一个内联建议|
+<kbd>Alt</kbd>+<kbd>[</kbd>|
+|触发内联建议|
+<kbd>Alt</kbd>+<kbd>\\</kbd>|
+|打开 GitHub Copilot（在单独的面板中查看其他建议）|
+<kbd>Alt</kbd>+<kbd>进入</kbd> |
+
+</div>
+
+<div class="ghd-tool visualstudio">
+
+使用 Visual Studio 时，可使用 GitHub Copilot 中的内联建议的默认键盘快捷方式。 可以在键盘快捷方式编辑器中按命令名称搜索每个键盘快捷方式。
+
+| 动作 | 快捷键 | 命令名称 |
+|:---|:---|:---|
+|显示下一个内联建议|
+<kbd>Alt</kbd>+<kbd>。</kbd>|编辑.下一个建议|
+|显示上一个内联建议|
+<kbd>Alt</kbd>+<kbd>、</kbd>|Edit.PreviousSuggestion|
+
+</div>
+
+<div class="ghd-tool vscode">
+
+您可以在 GitHub Copilot 中使用 Visual Studio Code 的默认键盘快捷方式。 在键盘快捷方式编辑器中，按命令名称搜索键盘快捷方式。
+
+## macOS 键盘快捷方式
+
+| 动作 | 快捷键 | 命令名称 |
+|:---|:---|:---|
+|接受内联建议|
+<kbd>选项卡</kbd>|editor.action.inlineSuggest.commit|
+|忽略内联建议|
+<kbd>Esc</kbd>|editor.action.inlineSuggest.hide|
+|显示下一个内联建议| 
+<kbd>选项 （⌥）</kbd>+<kbd>]</kbd><br> |editor.action.inlineSuggest.showNext|
+|显示上一个内联建议| 
+<kbd>选项 （⌥）</kbd>+<kbd>[</kbd><br> |editor.action.inlineSuggest.showPrevious|
+|触发内联建议| 
+<kbd>选项 (⌥)</kbd>+<kbd>\\</kbd><br> |editor.action.inlineSuggest.trigger|
+|打开 GitHub Copilot（在单独的面板中查看其他建议）|
+<kbd>Ctrl</kbd>+<kbd>返回</kbd>|github.copilot.generate|
+|开启/关闭 GitHub Copilot|没有默认快捷方式|github.copilot.toggleCopilot|
+
+## Windows 键盘快捷方式
+
+| 动作 | 快捷键 | 命令名称 |
+|:---|:---|:---|
+|接受内联建议|
+<kbd>选项卡</kbd>|editor.action.inlineSuggest.commit|
+|忽略内联建议|
+<kbd>Esc</kbd>|editor.action.inlineSuggest.hide|
+|显示下一个内联建议|
+<kbd>Alt</kbd>+<kbd>]</kbd> |editor.action.inlineSuggest.showNext|
+|显示上一个内联建议|
+<kbd>Alt</kbd>+<kbd>[</kbd>|editor.action.inlineSuggest.showPrevious|
+|触发内联建议|
+<kbd>Alt</kbd>+<kbd>\\</kbd>|editor.action.inlineSuggest.trigger|
+|打开 GitHub Copilot（在单独的面板中查看其他建议）|
+<kbd>Ctrl</kbd>+<kbd>进入</kbd>|github.copilot.generate|
+|开启/关闭 GitHub Copilot|没有默认快捷方式|github.copilot.toggleCopilot|
+
+## Linux 键盘快捷方式
+
+| 动作 | 快捷键 | 命令名称 |
+|:---|:---|:---|
+|接受内联建议|
+<kbd>选项卡</kbd>|editor.action.inlineSuggest.commit|
+|忽略内联建议|
+<kbd>Esc</kbd>|editor.action.inlineSuggest.hide|
+|显示下一个内联建议|
+<kbd>Alt</kbd>+<kbd>]</kbd> |editor.action.inlineSuggest.showNext|
+|显示上一个内联建议|
+<kbd>Alt</kbd>+<kbd>[</kbd>|editor.action.inlineSuggest.showPrevious|
+|触发内联建议|
+<kbd>Alt</kbd>+<kbd>\\</kbd>|editor.action.inlineSuggest.trigger|
+|打开 GitHub Copilot（在单独的面板中查看其他建议）|
+<kbd>Ctrl</kbd>+<kbd>进入</kbd>|github.copilot.generate|
+|开启/关闭 GitHub Copilot|没有默认快捷方式|github.copilot.toggleCopilot|
+
+</div>
+
+<div class="ghd-tool xcode">
+
+使用 GitHub Copilot 时，可以在 Xcode 中使用默认键盘快捷方式获取内联建议。 或者，可以将快捷方式重新绑定到每个特定命令的首选键盘快捷方式。
+
+| 动作 | 快捷键 |
+|:---|:---|
+|接受建议的第一行|
+<kbd>选项卡</kbd>|
+|查看完整建议|按住 <kbd>Option</kbd>|
+|接受完整建议|
+<kbd>选项</kbd>+<kbd>选项卡</kbd>|
+
+</div>
+
+<div class="ghd-tool eclipse">
+
+使用 GitHub Copilot 时，可以在 Eclipse 中使用默认键盘快捷方式获取内联建议。
+
+| 动作 | 快捷键 |
+|:---|:---|
+|接受内联建议|
+<kbd>选项卡</kbd>|
+|接受内联建议的下一个词|
+<kbd>Command</kbd>+<kbd>&rarr;</kbd> (Mac) 或 <kbd>Ctrl</kbd>+<kbd>&rarr;</kbd> (Windows)|
+|忽略内联建议|
+<kbd>Esc</kbd>|
+|触发内联建议|
+<kbd>Option (⌥)</kbd>+<kbd>Command</kbd>+<kbd>/</kbd> (Mac) 或 <kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>/</kbd> (Windows)|
+
+</div>
+
+<div class="ghd-tool vimneovim">
+
+使用 GitHub Copilot 为每个特定命令使用首选键盘快捷方式时，可以在 Vim/Neovim 中重新绑定键盘快捷方式。 有关详细信息，请参阅 Neovim 文档中的[映射](https://neovim.io/doc/user/map.html)一文。
+
+</div>  - name: 'Upload Artifact'
+    uses: actions/upload-artifact@v4
+    with:
+      name: my-artifact
+      path: my_file.txt
+      retention-days: 5
+# GitHub CLI api
+# https://cli.github.com/manual/gh_api
+
+gh api \
+  --method PUT \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  /repos/OWNER/REPO/actions/permissions/workflow \
+   -f 'default_workflow_permissions=read' -F "can_approve_pull_request_reviews=true"
